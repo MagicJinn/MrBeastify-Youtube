@@ -1,59 +1,72 @@
 const processedThumbnails = []
 const failedThumbnails = []
 
+
+
 // Fetch YouTube video thumbnails and apply image overlay
 function fetchAndModifyThumbnails() {
     const thumbnailElements = document.querySelectorAll('#thumbnail');
     thumbnailElements.forEach((thumbnailElement) => {
         try {
-            const videoURL = thumbnailElement.href
+            const videoURL = thumbnailElement.href;
             const videoId = getVideoIdFromUrl(videoURL);
             if (!processedThumbnails.includes(videoId) && videoURL !== "") {
                 fetchThumbnail(videoId)
                     .then((thumbnailUrl) => {
                         const overlayImageUrl = getRandomImageFromDirectory();
-
-                        // Save the thumbnail image
                         saveImageLocally(thumbnailUrl, `thumbnail_${videoId}.jpg`);
-
-                        const overlayImage = new Image();
-                        overlayImage.crossOrigin = 'anonymous';
-                        overlayImage.src = overlayImageUrl;
-
-                        overlayImage.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = overlayImage.width;
-                            canvas.height = overlayImage.height;
-
-                            const context = canvas.getContext('2d');
-                            context.drawImage(overlayImage, 0, 0);
-                            context.globalCompositeOperation = 'source-in';
-
-                            const thumbnailImage = new Image();
-                            thumbnailImage.crossOrigin = 'anonymous';
-                            thumbnailImage.src = thumbnailUrl;
-
-                            thumbnailImage.onload = () => {
-                                context.drawImage(thumbnailImage, 0, 0);
-
-                                const modifiedThumbnailUrl = canvas.toDataURL();
-                                thumbnailElement.querySelector('img').src = modifiedThumbnailUrl;
-                            };
-                        };
+                        applyOverlayToThumbnail(thumbnailUrl, overlayImageUrl, thumbnailElement);
                     })
-                    .catch((error) => {
-                        console.error('Error fetching thumbnail:', error);
+                    .catch(() => {
+                        const overlayImageUrl = getRandomImageFromDirectory();
+                        thumbnailUrl = browser.extension.getURL('images/whiteground.png');
+                        applyOverlayToThumbnail(thumbnailUrl, overlayImageUrl, thumbnailElement);
                     });
             }
         } catch (error) {
             if (!failedThumbnails.includes(thumbnailElement)) {
-                console.log(error)
+                console.log(error);
                 console.log((thumbnailElement.href || "<empty string>") + " is not a valid URL, retrying.");
-                failedThumbnails.push(thumbnailElement)
+                failedThumbnails.push(thumbnailElement);
             }
         }
     });
 }
+
+// Apply overlay to thumbnail
+function applyOverlayToThumbnail(thumbnailUrl, overlayImageUrl, thumbnailElement) {
+    const overlayImage = new Image();
+    overlayImage.crossOrigin = 'anonymous';
+    overlayImage.src = overlayImageUrl;
+  
+    overlayImage.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = overlayImage.width;
+      canvas.height = overlayImage.height;
+  
+      const context = canvas.getContext('2d');
+  
+      if (thumbnailUrl !== '') {
+        const thumbnailImage = new Image();
+        thumbnailImage.crossOrigin = 'anonymous';
+        thumbnailImage.src = thumbnailUrl;
+  
+        thumbnailImage.onload = () => {
+          context.drawImage(thumbnailImage, 0, 0);  // Draw the thumbnailImage as the background
+          context.drawImage(overlayImage, 0, 0);    // Draw the overlayImage on top
+          const modifiedThumbnailUrl = canvas.toDataURL();
+          thumbnailElement.querySelector('img').src = modifiedThumbnailUrl;
+        };
+      } else {
+        context.drawImage(overlayImage, 0, 0);      // Draw only the overlayImage
+        const modifiedThumbnailUrl = canvas.toDataURL();
+        thumbnailElement.querySelector('img').src = modifiedThumbnailUrl;
+      }
+    };
+  }
+  
+  
+  
 
 // Get video ID from YouTube video URL
 function getVideoIdFromUrl(url) {
@@ -72,17 +85,18 @@ function fetchThumbnail(videoId) {
         .then(data => {
             const thumbnailUrl = data.items[0].snippet.thumbnails.default.url;
             console.log('Thumbnail URL:', thumbnailUrl);
+            return thumbnailUrl; // Resolve the promise with the thumbnail URL
         })
-        .catch(error => {
-            console.error('Error fetching video details: ' + apiUrl, error);
+        .catch(() => {
+            console.log('Error fetching video details: ' + apiUrl);
+            return Promise.reject(); // Reject the promise without an error message
         });
 }
 
 
-
 // Get a random image URL from a directory
 function getRandomImageFromDirectory() {
-    const images = ['1.png', '2.png', '3.png'];
+    const images = ['1.png', '2.png', '3.png',"4.png"];
     const randomIndex = Math.floor(Math.random() * images.length);
     return browser.extension.getURL('images/' + images[randomIndex]);
 }
