@@ -14,7 +14,6 @@ function fetchAndModifyThumbnails() {
                 fetchThumbnail(videoId)
                     .then((thumbnailUrl) => {
                         const overlayImageUrl = getRandomImageFromDirectory();
-                        saveImageLocally(thumbnailUrl, `thumbnail_${videoId}.jpg`);
                         applyOverlayToThumbnail(thumbnailUrl, overlayImageUrl, thumbnailElement);
                     })
                     .catch(() => {
