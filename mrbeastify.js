@@ -23,9 +23,7 @@ function applyOverlayToThumbnails() {
   }
 
   // Query all YouTube video thumbnails on the page that haven"t been processed yet
-  const thumbnailElements = document.querySelectorAll("img.yt-core-image:not(.processed)");
-
-  // Apply overlay to each thumbnail
+  const thumbnailElements = document.querySelectorAll("img.yt-core-image:not(.processed):not(.yt-core-attributed-string__image-element)"); // Apply overlay to each thumbnail
   thumbnailElements.forEach((thumbnailElement) => {
     // Apply overlay and add to processed thumbnails
     let loops = Math.random() > 0.001 ? 1 : 20
