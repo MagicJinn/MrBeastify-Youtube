@@ -3,6 +3,7 @@
 Enhance your browsing experience with MrBeastifier. Is your browser experience boring? Are you having trouble finding engaging click-baity videos? Fear no more. This extension adds famous youtuber MrBeast to every thumbnail.
 
 [Chrome](https://chrome.google.com/webstore/detail/youtube-mrbeastify/dbmaeobgdodeimjdjnkipbfhgeldnmeb)
+
 [Firefox](https://addons.mozilla.org/en-GB/firefox/addon/mrbeastify-youtube/)
 
 
