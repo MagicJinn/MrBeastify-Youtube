@@ -13,9 +13,6 @@
     "permissions": [
         "https://www.youtube.com/*"
     ],
-    "browser_action": {
-        "default_popup": "example.com"
-    },
     "content_scripts": [{
         "matches": ["https://www.youtube.com/*"],
         "js": ["mrbeastify.js"],
