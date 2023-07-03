@@ -1,4 +1,5 @@
 const imagesPath = "images/";
+const images = [];
 
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
@@ -24,9 +25,9 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
   thumbnailElement.classList.add("processed");
 }
 
-// looks for all thumbnails and applies overlay
+// Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
-  // Query all YouTube video thumbnails on the page that haven"t been processed yet, and also ignores shorts thumbnails
+  // Query all YouTube video thumbnails on the page that haven't been processed yet, and also ignores shorts thumbnails
   const elementQuery =
     "ytd-thumbnail:not(.ytd-rich-grid-slim-media) > a > yt-image > img.yt-core-image:not(.processed):not(.yt-core-attributed-string__image-element)";
   const thumbnailElements = document.querySelectorAll(elementQuery);
@@ -34,7 +35,7 @@ function applyOverlayToThumbnails() {
   // Apply overlay to each thumbnail
   thumbnailElements.forEach((thumbnailElement) => {
     // Apply overlay and add to processed thumbnails
-    let loops = Math.random() > 0.001 ? 1 : 20;
+    let loops = Math.random() > 0.001 ? 1 : 20; // Easter egg
     for (let i = 0; i < loops; i++) {
       // Get overlay image URL from your directory
       const overlayImageUrl = getRandomImageFromDirectory();
@@ -44,59 +45,37 @@ function applyOverlayToThumbnails() {
   });
 }
 
-// Get a random image URL from a directory
-function getRandomImageFromDirectory() {
-  const images = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-    "16",
-    "17",
-    "18",
-    "19",
-    "20",
-    "21",
-    "22",
-    "23",
-    "24",
-    "25",
-    "26",
-    "27",
-    "28",
-    "29",
-    "30",
-    "31",
-  ];
-  const randomIndex = Math.floor(Math.random() * images.length);
-  if (
-    typeof chrome !== "undefined" &&
-    chrome.runtime &&
-    chrome.runtime.getURL
-  ) {
-    // Chrome or Edge
-    return chrome.runtime.getURL(`${imagesPath}${images[randomIndex]}.png`);
-  } else if (
-    typeof browser !== "undefined" &&
-    browser.extension &&
-    browser.extension.getURL
-  ) {
-    // Firefox
-    return browser.extension.getURL(`${imagesPath}${images[randomIndex]}`);
+function checkImageAmountInDirectory() { // Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
+  let imageIndex = 1;
+  function checkImageExistence() {
+    const testedURL = chrome.runtime.getURL(`${imagesPath}${imageIndex}.png`);
+    fetch(testedURL)
+      .then(response => {
+        if (response.status === 200) {
+          // Image exists, add it to the images array
+          images.push(testedURL);
+          // Check the next image in the directory
+          imageIndex++;
+          checkImageExistence();
+        } else {
+          throw new Error("Image not found");
+        }
+      })
+      .catch(error => {
+        // Stop checking for new images
+        console.log("Total MrBeast images found:", images.length);
+      });
   }
+  checkImageExistence();
 }
 
+// Get a random image URL from a directory
+function getRandomImageFromDirectory() {
+  const randomIndex = Math.floor(Math.random() * images.length);
+  return images[randomIndex];
+}
+
+checkImageAmountInDirectory()
 setInterval(function () {
   applyOverlayToThumbnails();
 }, 100);
