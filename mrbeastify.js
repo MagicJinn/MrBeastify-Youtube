@@ -47,6 +47,7 @@ function applyOverlayToThumbnails() {
 
 function checkImageAmountInDirectory() { // Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
   let imageIndex = 1;
+
   function checkImageExistence() {
     const testedURL = chrome.runtime.getURL(`${imagesPath}${imageIndex}.png`);
     fetch(testedURL)
@@ -57,13 +58,7 @@ function checkImageAmountInDirectory() { // Checks for all images in the images 
           // Check the next image in the directory
           imageIndex++;
           checkImageExistence();
-        } else {
-          throw new Error("Image not found");
         }
-      })
-      .catch(error => {
-        // Stop checking for new images
-        console.log("Total MrBeast images found:", images.length);
       });
   }
   checkImageExistence();
