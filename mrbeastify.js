@@ -5,6 +5,7 @@ const images = [];
 function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
   // Create a new img element for the overlay
   const overlayImage = document.createElement("img");
+  overlayImage.classList = "mr-beast";
   overlayImage.src = overlayImageUrl;
   overlayImage.style.position = "absolute";
   overlayImage.style.top = "0";
@@ -22,15 +23,14 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
 
   // Append the overlay to the parent of the thumbnail
   thumbnailElement.parentElement.appendChild(overlayImage);
-  thumbnailElement.classList.add("processed");
 }
 
 // Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
   // Query all YouTube video thumbnails on the page that haven't been processed yet
-  // (ignores shorts thumbnails)
+  // ignores shorts thumbnails and thumbnails that already have a mr beast on them
   const elementQuery =
-    "div#dismissible.ytd-rich-grid-media > ytd-thumbnail:not(.ytd-video-preview) > a > yt-image > img.yt-core-image:not(.processed):not(.yt-core-attributed-string__image-element)";
+    "ytd-thumbnail.ytd-rich-grid-media:not(.ytd-video-preview) > a > yt-image:not(:has(img.mr-beast)) > img.yt-core-image:not(.yt-core-attributed-string__image-element)";
   const thumbnailElements = document.querySelectorAll(elementQuery);
 
   // Apply overlay to each thumbnail
@@ -71,6 +71,6 @@ checkImageExistence(imageIndex);
 
 setInterval(function () {
   applyOverlayToThumbnails();
-}, 100);
+}, 500);
 
 console.log("MrBeastify Loaded Successfully");
