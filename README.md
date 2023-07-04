@@ -7,5 +7,5 @@ Enhance your browsing experience with MrBeastifier. Is your browser experience b
 Compatible with all browsers (Firefox and Chromium based)
 
 Notes:
-This extension was inspired by [Unnecessary Inventions](http://www.youtube.com/@UnnecessaryInventions) and his [website](http://www.mrbeastify.com/)
-This extension is unofficial and not affiliated with MrBeast or YouTube.
+* This extension was inspired by [Unnecessary Inventions](http://www.youtube.com/@UnnecessaryInventions) and his [website](http://www.mrbeastify.com/)
+* This extension is unofficial and not affiliated with MrBeast or YouTube.
