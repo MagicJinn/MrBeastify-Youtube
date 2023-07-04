@@ -27,9 +27,10 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
 
 // Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
-  // Query all YouTube video thumbnails on the page that haven't been processed yet, and also ignores shorts thumbnails
-  const elementQuery = 
-    "div#dismissible.ytd-rich-grid-media > ytd-thumbnail:not(.ytd-video-preview) > a > yt-image > img.yt-core-image:not(.processed):not(.yt-core-attributed-string__image-element)"
+  // Query all YouTube video thumbnails on the page that haven't been processed yet
+  // (ignores shorts thumbnails)
+  const elementQuery =
+    "div#dismissible.ytd-rich-grid-media > ytd-thumbnail:not(.ytd-video-preview) > a > yt-image > img.yt-core-image:not(.processed):not(.yt-core-attributed-string__image-element)";
   const thumbnailElements = document.querySelectorAll(elementQuery);
 
   // Apply overlay to each thumbnail
@@ -37,29 +38,25 @@ function applyOverlayToThumbnails() {
     // Apply overlay and add to processed thumbnails
     let loops = Math.random() > 0.001 ? 1 : 20; // Easter egg
 
-    // add overlay only when thumbnail is fully loaded
-    thumbnailElement.onload = function () {
-      for (let i = 0; i < loops; i++) {
-        // Get overlay image URL from your directory
-        const overlayImageUrl = getRandomImageFromDirectory();
-        const flip = Math.random() < 0.25; // 25% chance to flip the image
-        applyOverlay(thumbnailElement, overlayImageUrl, flip);
-      }
+    for (let i = 0; i < loops; i++) {
+      // Get overlay image URL from your directory
+      const overlayImageUrl = getRandomImageFromDirectory();
+      const flip = Math.random() < 0.25; // 25% chance to flip the image
+      applyOverlay(thumbnailElement, overlayImageUrl, flip);
     }
   });
 }
 
 function checkImageExistence(index) {
   const testedURL = chrome.runtime.getURL(`${imagesPath}${index}.png`);
-  fetch(testedURL)
-    .then(response => {
-      if (response.status === 200) {
-        // Image exists, add it to the images array
-        images.push(testedURL);
-        // Check the next image in the directory
-        checkImageExistence(index + 1);
-      }
-    });
+  fetch(testedURL).then((response) => {
+    if (response.status === 200) {
+      // Image exists, add it to the images array
+      images.push(testedURL);
+      // Check the next image in the directory
+      checkImageExistence(index + 1);
+    }
+  });
 }
 
 // Get a random image URL from a directory
