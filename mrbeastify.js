@@ -59,6 +59,9 @@ function checkImageAmountInDirectory() { // Checks for all images in the images 
           imageIndex++;
           checkImageExistence();
         }
+      })
+      .catch(() => {
+        applyOverlayToThumbnails();
       });
   }
   checkImageExistence();
@@ -71,8 +74,5 @@ function getRandomImageFromDirectory() {
 }
 
 checkImageAmountInDirectory()
-setInterval(function () {
-  applyOverlayToThumbnails();
-}, 100);
 
 console.log("MrBeastify Loaded Successfully");
