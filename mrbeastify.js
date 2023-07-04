@@ -30,7 +30,7 @@ function applyOverlayToThumbnails() {
   // Query all YouTube video thumbnails on the page that haven't been processed yet
   // ignores shorts thumbnails and thumbnails that already have a mr beast on them
   const elementQuery =
-    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) a > yt-image > img.yt-core-image:not(.processed):not(.yt-core-attributed-string__image-element)";
+    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) > a > yt-image:not(:has(img.mr-beast)) > img.yt-core-image:not(.yt-core-attributed-string__image-element)";
   const thumbnailElements = document.querySelectorAll(elementQuery);
 
   // Apply overlay to each thumbnail
