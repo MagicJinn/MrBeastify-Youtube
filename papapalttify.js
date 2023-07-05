@@ -22,20 +22,21 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
 
   // Append the overlay to the parent of the thumbnail
   thumbnailElement.parentElement.appendChild(overlayImage);
-  thumbnailElement.classList.add("processed");
 }
 
 // Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
-  // Query all YouTube video thumbnails on the page that haven't been processed yet, and also ignores shorts thumbnails
+  // Query all YouTube video thumbnails on the page that haven't been processed yet
+  // (ignores shorts thumbnails)
   const elementQuery =
-    "ytd-thumbnail:not(.ytd-rich-grid-slim-media) > a > yt-image > img.yt-core-image:not(.processed):not(.yt-core-attributed-string__image-element)";
+    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) a > yt-image > img.yt-core-image:only-child:not(.yt-core-attributed-string__image-element)";
   const thumbnailElements = document.querySelectorAll(elementQuery);
 
   // Apply overlay to each thumbnail
   thumbnailElements.forEach((thumbnailElement) => {
     // Apply overlay and add to processed thumbnails
     let loops = Math.random() > 0.001 ? 1 : 20; // Easter egg
+
     for (let i = 0; i < loops; i++) {
       // Get overlay image URL from your directory
       const overlayImageUrl = getRandomImageFromDirectory();
@@ -45,34 +46,28 @@ function applyOverlayToThumbnails() {
   });
 }
 
-function checkImageAmountInDirectory() { // Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
-  let imageIndex = 1;
-
-  function checkImageExistence() {
-    const testedURL = chrome.runtime.getURL(`${imagesPath}${imageIndex}.png`);
-    fetch(testedURL)
-      .then(response => {
-        if (response.status === 200) {
-          // Image exists, add it to the images array
-          images.push(testedURL);
-          // Check the next image in the directory
-          imageIndex++;
-          checkImageExistence();
-        }
-      });
-  }
-  checkImageExistence();
-}
-
 // Get a random image URL from a directory
 function getRandomImageFromDirectory() {
   const randomIndex = Math.floor(Math.random() * images.length);
   return images[randomIndex];
 }
 
-checkImageAmountInDirectory()
-setInterval(function () {
-  applyOverlayToThumbnails();
-}, 100);
+// Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
+function checkImageExistence(index = 1) {
+  const testedURL = chrome.runtime.getURL(`${imagesPath}${index}.png`);
+  fetch(testedURL)
+    .then((response) => {
+      // Image exists, add it to the images array
+      images.push(testedURL);
+      // Check the next image in the directory
+      checkImageExistence(index + 1);
+    })
+    .catch((error) => { // The function encountered a missing image. Start applying overlays
+      setInterval(applyOverlayToThumbnails, 100);
+      console.log(
+        "MrBeastify Loaded Successfully, " + (index - 1) + " images detected."
+      );
+    });
+}
 
-console.log("MrBeastify Loaded Successfully");
+checkImageExistence();
