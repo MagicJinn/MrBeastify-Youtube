@@ -51,12 +51,10 @@ function checkImageExistence(index = 1) {
   const testedURL = chrome.runtime.getURL(`${imagesPath}${index}.png`);
   fetch(testedURL)
     .then((response) => {
-      if (response.status === 200) {
-        // Image exists, add it to the images array
-        images.push(testedURL);
-        // Check the next image in the directory
-        checkImageExistence(index + 1);
-      }
+      // Image exists, add it to the images array
+      images.push(testedURL);
+      // Check the next image in the directory
+      checkImageExistence(index + 1);
     })
     .catch((error) => {
       setInterval(applyOverlayToThumbnails, 100);
