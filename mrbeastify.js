@@ -30,7 +30,7 @@ function applyOverlayToThumbnails() {
   // Query all YouTube video thumbnails on the page that haven't been processed yet
   // ignores shorts thumbnails and thumbnails that already have a mr beast on them
   const elementQuery =
-    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) > a > yt-image:not(:has(img.mr-beast)) > img.yt-core-image:not(.yt-core-attributed-string__image-element)";
+    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) > a > yt-image > img.yt-core-image:only-child:not(.yt-core-attributed-string__image-element)";
   const thumbnailElements = document.querySelectorAll(elementQuery);
 
   // Apply overlay to each thumbnail
@@ -74,13 +74,3 @@ function getRandomImageFromDirectory() {
   const randomIndex = Math.floor(Math.random() * images.length);
   return images[randomIndex];
 }
-
-// Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
-let imageIndex = 1;
-checkImageExistence(imageIndex);
-
-setInterval(function () {
-  applyOverlayToThumbnails();
-}, 500);
-
-console.log("MrBeastify Loaded Successfully");
