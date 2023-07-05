@@ -46,8 +46,14 @@ function applyOverlayToThumbnails() {
   });
 }
 
+// Get a random image URL from a directory
+function getRandomImageFromDirectory() {
+  const randomIndex = Math.floor(Math.random() * images.length);
+  return images[randomIndex];
+}
+
+// Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
 function checkImageExistence(index = 1) {
-  // Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
   const testedURL = chrome.runtime.getURL(`${imagesPath}${index}.png`);
   fetch(testedURL)
     .then((response) => {
@@ -56,7 +62,7 @@ function checkImageExistence(index = 1) {
       // Check the next image in the directory
       checkImageExistence(index + 1);
     })
-    .catch((error) => {
+    .catch((error) => { // The function encountered a missing image. Start applying overlays
       setInterval(applyOverlayToThumbnails, 100);
       console.log(
         "MrBeastify Loaded Successfully, " + (index - 1) + " images detected."
@@ -65,9 +71,3 @@ function checkImageExistence(index = 1) {
 }
 
 checkImageExistence();
-
-// Get a random image URL from a directory
-function getRandomImageFromDirectory() {
-  const randomIndex = Math.floor(Math.random() * images.length);
-  return images[randomIndex];
-}
