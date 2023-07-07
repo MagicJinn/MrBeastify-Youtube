@@ -54,13 +54,21 @@ function getRandomImageFromDirectory() {
 
 // Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
 function checkImageExistence(index = 1) {
+  const maxImages = 37; // The number of images in the images folder
   const testedURL = chrome.runtime.getURL(`${imagesPath}${index}.png`);
   fetch(testedURL)
     .then((response) => {
       // Image exists, add it to the images array
       images.push(testedURL);
       // Check the next image in the directory
-      checkImageExistence(index + 1);
+      if(index < maxImages){
+        checkImageExistence(index + 1);
+      }else{
+        setInterval(applyOverlayToThumbnails, 100);
+      console.log(
+        "MrBeastify Loaded Successfully, " + (index - 1) + " images detected."
+      );
+      }
     })
     .catch((error) => { // The function encountered a missing image. Start applying overlays
       setInterval(applyOverlayToThumbnails, 100);
