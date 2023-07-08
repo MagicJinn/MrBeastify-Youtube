@@ -65,9 +65,44 @@ function checkImageExistence(index = 1) {
     .catch((error) => { // The function encountered a missing image. Start applying overlays
       setInterval(applyOverlayToThumbnails, 100);
       console.log(
-        "MrBeastify Loaded Successfully, " + (index - 1) + " images detected."
+        "Papaplattify Loaded Successfully, " + (index - 1) + " images detected."
       );
     });
 }
 
+
+// replace various elements
+function replaceElements() {
+  replaceChannelNames();
+  replaceTitles();
+  replaceAvatars();
+}
+
+function replaceChannelNames() {
+  const elementQuery = "ytd-channel-name a";
+  const channelNameElements = document.querySelectorAll(elementQuery);
+  console.log(channelNameElements)
+  channelNameElements.forEach((channelNameElement) => {
+    channelNameElement.innerHTML = 'Domo';
+  })
+}
+
+function replaceTitles() {
+  const elementQuery = "#video-title";
+  const titleElements = document.querySelectorAll(elementQuery);
+  titleElements.forEach((titleElement) => {
+    titleElement.innerHTML = 'Papaplatte reagiert auf "' + titleElement.getAttribute("aria-label") + '"';
+  })
+}
+
+function replaceAvatars() {
+  const elementQuery = "#avatar > img";
+  const avatarElements = document.querySelectorAll(elementQuery);
+  avatarElements.forEach((avatarElement) => {
+    avatarElement.src = 'https://yt3.googleusercontent.com/ytc/AOPolaQka2LVeiBI_JbXJi0TjlY82pkLJiPAGFtemPF0=s176-c-k-c0x00ffffff-no-rj';
+    avatarElement.style.visibility = 'visible';
+  })
+}
+
 checkImageExistence();
+setInterval(replaceElements, 100);
