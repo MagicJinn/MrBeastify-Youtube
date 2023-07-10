@@ -1,5 +1,6 @@
 const imagesPath = "images/";
-const images = [];
+
+let highestImageIndex;
 
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
@@ -46,28 +47,70 @@ function applyOverlayToThumbnails() {
   });
 }
 
+// Get the URL of an image
+function getImageURL(index) {
+  return chrome.runtime.getURL(`${imagesPath}${index}.png`);
+}
+
 // Get a random image URL from a directory
 function getRandomImageFromDirectory() {
-  const randomIndex = Math.floor(Math.random() * images.length);
-  return images[randomIndex];
+  const randomIndex = Math.floor(Math.random() * highestImageIndex) + 1;
+  
+  return getImageURL(randomIndex);
 }
 
-// Checks for all images in the images folder instead of using a preset array, making the extension infinitely scalable
-function checkImageExistence(index = 1) {
-  const testedURL = chrome.runtime.getURL(`${imagesPath}${index}.png`);
-  fetch(testedURL)
-    .then((response) => {
-      // Image exists, add it to the images array
-      images.push(testedURL);
-      // Check the next image in the directory
-      checkImageExistence(index + 1);
-    })
-    .catch((error) => { // The function encountered a missing image. Start applying overlays
-      setInterval(applyOverlayToThumbnails, 100);
-      console.log(
-        "MrBeastify Loaded Successfully, " + (index - 1) + " images detected."
-      );
-    });
+// Checks if an image exists in the image folder
+async function checkImageExistence(index = 1) {
+  const testedURL = getImageURL(index)
+  
+  try {
+    // See if the image exists
+    await fetch(testedURL);
+
+    // Image exists
+    return true;
+  } catch {
+    // Image does not exist
+    return false;
+  }
 }
 
-checkImageExistence();
+// Gets the highest index of an image in the image folder starting from 1
+async function getHighestImageIndex() {
+	// Avoid exponential search for smaller values
+	i = 4;
+	
+	// Increase i until i is greater than the number of images
+	while (await checkImageExistence(i)) {
+		i *= 2;
+	}
+	
+	// Possible min and max values
+	min = i <= 4 ? 1 : i / 2;
+	max = i;
+
+	// Binary search
+	while (min <= max) {
+		// Find the midpoint of possible max and min
+		let mid = Math.floor((min + max) / 2);
+		
+		// Check if the midpoint exists
+		if (await checkImageExistence(mid)) {
+			// If it does, next min to check is one greater
+			min = mid + 1;
+		} else {
+			// If it doesn't, max must be at least one less
+			max = mid - 1;
+		}
+	}
+
+	// Max is the size of the image array
+	highestImageIndex = max;
+}
+
+getHighestImageIndex().then(() => {
+  setInterval(applyOverlayToThumbnails, 100);
+  console.log(
+    "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected."
+  );
+})
