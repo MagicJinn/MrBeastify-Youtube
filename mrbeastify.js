@@ -1,7 +1,5 @@
 const imagesPath = "images/";
 
-let highestImageIndex;
-
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
   // Create a new img element for the overlay
@@ -12,14 +10,11 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
   overlayImage.style.left = "0";
   overlayImage.style.width = "100%";
   overlayImage.style.height = "100%";
-  overlayImage.style.zIndex = "0"; // Ensure overlay is on top
-
+  overlayImage.style.zIndex = "0"; // Ensure overlay is on top but below the time indicator
   if (flip) {
     overlayImage.style.transform = "scaleX(-1)"; // Flip the image horizontally
   }
-
-  // Style the thumbnailElement to handle absolute positioning
-  thumbnailElement.style.position = "relative";
+  thumbnailElement.style.position = "relative"; // Style the thumbnailElement to handle absolute positioning
 
   // Append the overlay to the parent of the thumbnail
   thumbnailElement.parentElement.appendChild(overlayImage);
@@ -55,62 +50,61 @@ function getImageURL(index) {
 // Get a random image URL from a directory
 function getRandomImageFromDirectory() {
   const randomIndex = Math.floor(Math.random() * highestImageIndex) + 1;
-  
+
   return getImageURL(randomIndex);
 }
 
 // Checks if an image exists in the image folder
 async function checkImageExistence(index = 1) {
   const testedURL = getImageURL(index)
-  
+
   try {
     // See if the image exists
     await fetch(testedURL);
-
-    // Image exists
-    return true;
+    return true // Image exists
   } catch {
-    // Image does not exist
-    return false;
+    return false // Image does not exist
   }
 }
 
+let highestImageIndex;
 // Gets the highest index of an image in the image folder starting from 1
 async function getHighestImageIndex() {
-	// Avoid exponential search for smaller values
-	i = 4;
-	
-	// Increase i until i is greater than the number of images
-	while (await checkImageExistence(i)) {
-		i *= 2;
-	}
-	
-	// Possible min and max values
-	min = i <= 4 ? 1 : i / 2;
-	max = i;
+  // Avoid exponential search for smaller values
+  let i = 4;
 
-	// Binary search
-	while (min <= max) {
-		// Find the midpoint of possible max and min
-		let mid = Math.floor((min + max) / 2);
-		
-		// Check if the midpoint exists
-		if (await checkImageExistence(mid)) {
-			// If it does, next min to check is one greater
-			min = mid + 1;
-		} else {
-			// If it doesn't, max must be at least one less
-			max = mid - 1;
-		}
-	}
+  // Increase i until i is greater than the number of images
+  while (await checkImageExistence(i)) {
+    i *= 2;
+  }
 
-	// Max is the size of the image array
-	highestImageIndex = max;
+  // Possible min and max values
+  min = i <= 4 ? 1 : i / 2;
+  max = i;
+
+  // Binary search
+  while (min <= max) {
+    // Find the midpoint of possible max and min
+    let mid = Math.floor((min + max) / 2);
+
+    // Check if the midpoint exists
+    if (await checkImageExistence(mid)) {
+      // If it does, next min to check is one greater
+      min = mid + 1;
+    } else {
+      // If it doesn't, max must be at least one less
+      max = mid - 1;
+    }
+  }
+
+  // Max is the size of the image array
+  highestImageIndex = max;
 }
 
-getHighestImageIndex().then(() => {
-  setInterval(applyOverlayToThumbnails, 100);
-  console.log(
-    "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected."
-  );
-})
+getHighestImageIndex()
+  .then(() => {
+    setInterval(applyOverlayToThumbnails, 100);
+    console.log(
+      "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected."
+    );
+  })
