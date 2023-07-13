@@ -79,8 +79,8 @@ async function getHighestImageIndex() {
   }
 
   // Possible min and max values
-  min = i <= 4 ? 1 : i / 2;
-  max = i;
+  let min = i <= 4 ? 1 : i / 2;
+  let max = i;
 
   // Binary search
   while (min <= max) {
