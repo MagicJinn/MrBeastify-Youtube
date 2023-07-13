@@ -1,5 +1,7 @@
 const imagesPath = "images/";
+const reversedImagesPath = "images/reversed/";
 const images = [];
+const specialReversedImages = ["23.png", "37.png", "46.png"];
 
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
@@ -14,6 +16,12 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
   overlayImage.style.zIndex = "0"; // Ensure overlay is on top
 
   if (flip) {
+    for (let i = 0; i < specialReversedImages.length; i++) {
+      if (overlayImageUrl.endsWith(specialReversedImages[i])) {
+        overlayImage.src = overlayImageUrl.replace(imagesPath, reversedImagesPath);
+        break;
+      }
+    }
     overlayImage.style.transform = "scaleX(-1)"; // Flip the image horizontally
   }
 
