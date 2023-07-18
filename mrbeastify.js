@@ -65,9 +65,6 @@ function getRandomImageFromDirectory() {
   // and pushes the current index.  
   last_indexes.shift()
   last_indexes.push(randomIndex)
-  
-  console.log(last_indexes)
-
 
   return getImageURL(randomIndex);
 }
