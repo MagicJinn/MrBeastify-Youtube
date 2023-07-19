@@ -21,7 +21,7 @@ jobs:
         uses: softprops/action-gh-release@v1
       # release new version on chrome
       - name: Chrome Extension upload & publish
-        uses: Klemensas/chrome-extension-upload-action@1.3
+        uses: Klemensas/chrome-extension-upload-action@v1.3
         with:
           refresh-token: ${{ secrets.REFRESH_TOKEN }}
           client-id: ${{ secrets.CLIENT_ID }}
