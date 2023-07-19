@@ -91,12 +91,15 @@ function replaceTitles() {
   const elementQuery = "#video-title";
   const titleElements = document.querySelectorAll(elementQuery);
   titleElements.forEach((titleElement) => {
+    if(titleElement.getAttribute("aria-label") === null){
+      titleElement.setAttribute("aria-label", titleElement.innerHTML)
+    }
     titleElement.innerHTML = 'Papaplatte reagiert auf "' + titleElement.getAttribute("aria-label") + '"';
   })
 }
 
 function replaceAvatars() {
-  const elementQuery = "#avatar > img";
+  const elementQuery = "#channel-thumbnail img, #avatar > img";
   const avatarElements = document.querySelectorAll(elementQuery);
   avatarElements.forEach((avatarElement) => {
     avatarElement.src = 'https://yt3.googleusercontent.com/ytc/AOPolaQka2LVeiBI_JbXJi0TjlY82pkLJiPAGFtemPF0=s176-c-k-c0x00ffffff-no-rj';
