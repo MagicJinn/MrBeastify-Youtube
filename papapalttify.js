@@ -1,6 +1,9 @@
 const imagesPath = "images/";
 const images = [];
 
+var isEnabled = false;
+var facecamElement = null;
+
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
   // Create a new img element for the overlay
@@ -26,6 +29,9 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
 
 // Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
+  if (!isEnabled) {
+    return;
+  }
   // Query all YouTube video thumbnails on the page that haven't been processed yet
   // (ignores shorts thumbnails)
   const elementQuery =
@@ -73,15 +79,17 @@ function checkImageExistence(index = 1) {
 
 // replace various elements
 function replaceElements() {
-  replaceChannelNames();
-  replaceTitles();
-  replaceAvatars();
+  if (isEnabled) {
+    replaceChannelNames();
+    replaceTitles();
+    replaceAvatars();
+    replaceVideoTitle();
+  }
 }
 
 function replaceChannelNames() {
   const elementQuery = "ytd-channel-name a";
   const channelNameElements = document.querySelectorAll(elementQuery);
-  console.log(channelNameElements)
   channelNameElements.forEach((channelNameElement) => {
     channelNameElement.innerHTML = 'Domo';
   })
@@ -91,7 +99,7 @@ function replaceTitles() {
   const elementQuery = "#video-title";
   const titleElements = document.querySelectorAll(elementQuery);
   titleElements.forEach((titleElement) => {
-    if(titleElement.getAttribute("aria-label") === null){
+    if (titleElement.getAttribute("aria-label") === null) {
       titleElement.setAttribute("aria-label", titleElement.innerHTML)
     }
     titleElement.innerHTML = 'Papaplatte reagiert auf "' + titleElement.getAttribute("aria-label") + '"';
@@ -107,5 +115,84 @@ function replaceAvatars() {
   })
 }
 
+function addFacecam() {
+  if (!isEnabled) {
+    return;
+  }
+
+  const elementQuery = ".html5-video-container:not(:has(img))";
+  const videoElement = document.querySelector(elementQuery);
+
+  if (videoElement == null) {
+    return;
+  }
+
+  videoElement.style.height = "100%";
+
+  facecamElement = document.createElement("img");
+  facecamElement.src = chrome.runtime.getURL('facecam.png');
+  facecamElement.style.position = "absolute";
+
+  facecamElement.style.width = "20%";
+  facecamElement.style.zIndex = "0"; // Ensure overlay is on top
+
+  positionFacecam();
+
+  videoElement.style.position = "relative";
+
+  videoElement.appendChild(facecamElement);
+}
+
+function positionFacecam() {
+  if (!isEnabled) {
+    return;
+  }
+
+  if (Math.random() >= 0.5) {
+    facecamElement.style.left = "0";
+    facecamElement.style.right = "auto";
+  } else {
+    facecamElement.style.right = "0";
+    facecamElement.style.left = "auto";
+  }
+
+  if (Math.random() >= 0.5) {
+    facecamElement.style.top = "0";
+    facecamElement.style.bottom = "auto";
+  } else {
+    facecamElement.style.bottom = "0";
+    facecamElement.style.top = "auto";
+  }
+
+}
+
+function replaceVideoTitle(){
+  const elementQuery = "#title h1:not(:has(p))";
+  const titleElement = document.querySelector(elementQuery);
+
+  if(titleElement == null){
+    return;
+  }
+
+  titleElement.style.display = 'flex'
+
+  const front = document.createElement("p")
+  front.innerHTML = 'Papaplatte reagiert auf "';
+  titleElement.prepend(front)
+
+  const last = document.createElement("p")
+  last.innerHTML = '"';
+  titleElement.appendChild(last)
+}
+
+replaceVideoTitle()
+
 checkImageExistence();
 setInterval(replaceElements, 100);
+
+setInterval(addFacecam, 100);
+
+chrome.runtime.sendMessage({ action: 'getPapaplattify' }, function (response) {
+  this.isEnabled = response.value;
+});
+
