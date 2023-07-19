@@ -16,9 +16,6 @@ jobs:
         uses: TheDoctor0/zip-release@0.7.1
         with:
           filename: papaplattify.zip
-      # create github release
-      - name: Release
-        uses: softprops/action-gh-release@v1
       # release new version on chrome
       - name: Chrome Extension upload & publish
         uses: Klemensas/chrome-extension-upload-action@v1.3
