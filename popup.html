@@ -1,0 +1,111 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papaplattify toggle</title>
+
+    
+    <script src="popup.js" defer></script>
+</head>
+
+<body>
+    <h1>YouTube Papaplattify</h1>
+    <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+        <p>off/on</p>
+        <label class="switch">
+            <input type="checkbox" id="toggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+    <p id="reloadHint">bitte lade die Seite neu</p>
+    <img src="goofy.webp" alt="goofy">
+
+</body>
+
+
+<style>
+    body {
+        padding: 1rem;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 23px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 17px;
+        width: 17px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    input:checked+.slider {
+        background-color: #21f33d;
+    }
+
+    input:focus+.slider {
+        box-shadow: 0 0 1px #21f33d;
+    }
+
+    input:checked+.slider:before {
+        -webkit-transform: translateX(17px);
+        -ms-transform: translateX(17px);
+        transform: translateX(17px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 23px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
+
+    #reloadHint {
+        height: 2rem;
+        border-top: #ccc 2px solid;
+        padding-top: 1rem;
+        visibility: hidden;
+    }
+
+    img{
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        z-index: -1;
+        opacity: 0.2;
+        left: 0;
+    }
+</style>
+
+</html>
