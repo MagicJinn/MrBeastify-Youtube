@@ -27,7 +27,6 @@
       "matches": ["*://*/*"]
     }
   ],
-  ,
   "action": {
     "default_title": "Papaplattify Settings",
     "default_popup": "popup.html"
