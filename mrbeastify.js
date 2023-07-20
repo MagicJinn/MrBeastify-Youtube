@@ -19,7 +19,7 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
     overlayImage.style.zIndex = "0";
   } else if ((Math.abs(aspectRatio - (210 / 372)) < 0.01)) {
     // Apply specific CSS for big short's thumbnails, like one's at the shorts tab
-    overlayImage.style.top = "189px";
+    overlayImage.style.top = "222px";
     overlayImage.style.left = "-3px";
     overlayImage.style.width = "160%";
     overlayImage.style.height = "50%";
