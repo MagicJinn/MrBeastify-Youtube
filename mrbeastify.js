@@ -47,9 +47,24 @@ function getImageURL(index) {
   return chrome.runtime.getURL(`${imagesPath}${index}.png`);
 }
 
+// Defines the N size of last images that will not be repeated.
+const size_of_non_repeat = 8
+// List of the index of the last N selected images.
+const last_indexes = Array(size_of_non_repeat)
+
 // Get a random image URL from a directory
 function getRandomImageFromDirectory() {
-  const randomIndex = Math.floor(Math.random() * highestImageIndex) + 1;
+  let randomIndex = -1
+
+  // It selects a random index until it finds one that is not repeated
+  while (last_indexes.includes(randomIndex) || randomIndex < 0) {
+    randomIndex = Math.floor(Math.random() * highestImageIndex) + 1;
+  }
+
+  // When it finds the non repeating index, it eliminates the oldest value,
+  // and pushes the current index.  
+  last_indexes.shift()
+  last_indexes.push(randomIndex)
 
   return getImageURL(randomIndex);
 }
