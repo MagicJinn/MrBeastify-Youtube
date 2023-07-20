@@ -6,15 +6,39 @@ function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
   const overlayImage = document.createElement("img");
   overlayImage.src = overlayImageUrl;
   overlayImage.style.position = "absolute";
-  overlayImage.style.top = "0";
-  overlayImage.style.left = "0";
-  overlayImage.style.width = "100%";
-  overlayImage.style.height = "100%";
-  overlayImage.style.zIndex = "0"; // Ensure overlay is on top but below the time indicator
+
+  const aspectRatio = thumbnailElement.clientWidth / thumbnailElement.clientHeight;
+
+  // Check if the thumbnail is a short's one
+  if ((Math.abs(aspectRatio - (131 / 238)) < 0.01)) {
+    // Apply specific CSS for small short's thumbnails, like one's at the left side of a video on desktop
+    overlayImage.style.top = "123px";
+    overlayImage.style.left = "-3px";
+    overlayImage.style.width = "160%";
+    overlayImage.style.height = "50%";
+    overlayImage.style.zIndex = "0";
+  } else if ((Math.abs(aspectRatio - (210 / 372)) < 0.01)) {
+    // Apply specific CSS for big short's thumbnails, like one's at the shorts tab
+    overlayImage.style.top = "222px";
+    overlayImage.style.left = "-3px";
+    overlayImage.style.width = "160%";
+    overlayImage.style.height = "50%";
+    overlayImage.style.zIndex = "0";
+  } else {
+    // Apply default CSS for other thumbnails
+    overlayImage.style.top = "0";
+    overlayImage.style.left = "0";
+    overlayImage.style.width = "100%";
+    overlayImage.style.height = "100%";
+    overlayImage.style.zIndex = "0";
+  }
+
   if (flip) {
     overlayImage.style.transform = "scaleX(-1)"; // Flip the image horizontally
   }
-  thumbnailElement.style.position = "relative"; // Style the thumbnailElement to handle absolute positioning
+
+  // Style the thumbnailElement to handle absolute positioning
+  thumbnailElement.style.position = "relative";
 
   // Append the overlay to the parent of the thumbnail
   thumbnailElement.parentElement.appendChild(overlayImage);
@@ -25,7 +49,7 @@ function applyOverlayToThumbnails() {
   // Query all YouTube video thumbnails on the page that haven't been processed yet
   // (ignores shorts thumbnails)
   const elementQuery =
-    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) a > yt-image > img.yt-core-image:only-child:not(.yt-core-attributed-string__image-element)";
+    "ytd-thumbnail:not(.ytd-video-preview) a > yt-image > img.yt-core-image:only-child:not(.yt-core-attributed-string__image-element)";
   const thumbnailElements = document.querySelectorAll(elementQuery);
 
   // Apply overlay to each thumbnail
@@ -71,14 +95,14 @@ function getRandomImageFromDirectory() {
 
 // Checks if an image exists in the image folder
 async function checkImageExistence(index = 1) {
-  const testedURL = getImageURL(index)
+  const testedURL = getImageURL(index);
 
   try {
     // See if the image exists
     await fetch(testedURL);
-    return true // Image exists
+    return true; // Image exists
   } catch {
-    return false // Image does not exist
+    return false; // Image does not exist
   }
 }
 
@@ -116,10 +140,9 @@ async function getHighestImageIndex() {
   highestImageIndex = max;
 }
 
-getHighestImageIndex()
-  .then(() => {
-    setInterval(applyOverlayToThumbnails, 100);
-    console.log(
-      "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected."
-    );
-  })
+getHighestImageIndex().then(() => {
+  setInterval(applyOverlayToThumbnails, 100);
+  console.log(
+    "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected."
+  );
+});
