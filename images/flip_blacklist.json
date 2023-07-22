@@ -1,4 +1,4 @@
 {
     "useAlternativeImages": true, 
-    "blacklistedImages": ["23.png", "37.png", "46.png"]
+    "blacklistedImages": [23, 37, 46]
 }
