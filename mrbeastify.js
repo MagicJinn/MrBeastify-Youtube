@@ -37,7 +37,15 @@ function applyOverlayToThumbnails() {
       // Get overlay image URL from your directory
       const overlayImageUrl = getRandomImageFromDirectory();
       const flip = Math.random() < 0.25; // 25% chance to flip the image
-      applyOverlay(thumbnailElement, overlayImageUrl, flip);
+      if (flip === true) {
+        var blacklisted = "23 37 46"
+        var imageNumber = parseInt(overlayImageUrl.slice(-6, -4));
+        if (blacklisted.includes(imageNumber) === true) {
+          applyOverlay(thumbnailElement, overlayImageUrl, false);
+        } else {
+          applyOverlay(thumbnailElement, overlayImageUrl, flip);
+        }
+      }
     }
   });
 }
