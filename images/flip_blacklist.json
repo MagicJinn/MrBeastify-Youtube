@@ -1,4 +1,4 @@
 {
-    "useAlternativeImages": true, // If true, will use images from "images/flipped". If false, ignore blacklisted images.
-    "blacklistedImages": ["23.png", "37.png", "46.png"] // These images are replaced or skipped.
+    "useAlternativeImages": true, 
+    "blacklistedImages": ["23.png", "37.png", "46.png"]
 }

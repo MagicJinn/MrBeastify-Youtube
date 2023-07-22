@@ -1,4 +1,6 @@
 const imagesPath = "images/";
+var useAlternativeImages
+var flipBlacklist
 
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
@@ -82,7 +84,7 @@ async function checkImageExistence(index = 1) {
   }
 }
 
-let highestImageIndex;
+var highestImageIndex;
 // Gets the highest index of an image in the image folder starting from 1
 async function getHighestImageIndex() {
   // Avoid exponential search for smaller values
@@ -115,11 +117,31 @@ async function getHighestImageIndex() {
   // Max is the size of the image array
   highestImageIndex = max;
 }
+var blacklistStatus
+
+function GetFlipBlocklist() {
+  fetch(chrome.runtime.getURL(`${imagesPath}flip_blacklist.json`))
+    .then(response => response.json())
+    .then(data => {
+      useAlternativeImages = data.useAlternativeImages;
+      flipBlacklist = data.blacklistedImages;
+
+      console.log("useAlternativeImages:", useAlternativeImages); // true
+      blacklistStatus = "Flip blacklist found. " + (useAlternativeImages ? "Images will be substituted." : "Images won't be flipped.")
+      // You can also use the boolean variable to conditionally do something
+    })
+    .catch(error => {
+      console.log(error)
+      blacklistStatus = "No flip blacklist found. Proceeding without it."
+    });
+}
+
+GetFlipBlocklist()
 
 getHighestImageIndex()
   .then(() => {
     setInterval(applyOverlayToThumbnails, 100);
     console.log(
-      "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected."
+      "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected. " + blacklistStatus
     );
   })

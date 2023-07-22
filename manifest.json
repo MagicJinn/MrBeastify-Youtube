@@ -19,6 +19,7 @@
         "run_at": "document_idle"
     }],
     "web_accessible_resources": [
-        "images/*.png"
+        "images/*.png",
+        "images/*.json"
     ]
 }
