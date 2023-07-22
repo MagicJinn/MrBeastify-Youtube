@@ -3,10 +3,10 @@ var useAlternativeImages
 var flipBlacklist
 
 // Apply the overlay
-function applyOverlay(thumbnailElement, overlayImageUrl, flip) {
+function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
   // Create a new img element for the overlay
   const overlayImage = document.createElement("img");
-  overlayImage.src = overlayImageUrl;
+  overlayImage.src = overlayImageURL;
   overlayImage.style.position = "absolute";
   overlayImage.style.top = "0";
   overlayImage.style.left = "0";
@@ -37,9 +37,21 @@ function applyOverlayToThumbnails() {
 
     for (let i = 0; i < loops; i++) {
       // Get overlay image URL from your directory
-      const overlayImageUrl = getRandomImageFromDirectory();
-      const flip = Math.random() < 0.25; // 25% chance to flip the image
-      applyOverlay(thumbnailElement, overlayImageUrl, flip);
+      const overlayImageIndex = getRandomImageFromDirectory();
+      let flip = Math.random() < 0.25; // 25% chance to flip the image
+      let overlayImageURL
+      if (flip && flipBlacklist.includes(overlayImageIndex)) {
+        if (useAlternativeImages) {
+          overlayImageURL = getImageURL(`textFlipped/${overlayImageIndex}`);
+          flip = false;
+        } else {
+          overlayImageURL = getImageURL(overlayImageIndex);
+          flip = false;
+        }
+      } else {
+        overlayImageURL = getImageURL(overlayImageIndex);
+      }
+      applyOverlay(thumbnailElement, overlayImageURL, flip);
     }
   });
 }
@@ -68,7 +80,7 @@ function getRandomImageFromDirectory() {
   last_indexes.shift()
   last_indexes.push(randomIndex)
 
-  return getImageURL(randomIndex);
+  return randomIndex
 }
 
 // Checks if an image exists in the image folder
@@ -126,9 +138,7 @@ function GetFlipBlocklist() {
       useAlternativeImages = data.useAlternativeImages;
       flipBlacklist = data.blacklistedImages;
 
-      console.log("useAlternativeImages:", useAlternativeImages); // true
       blacklistStatus = "Flip blacklist found. " + (useAlternativeImages ? "Images will be substituted." : "Images won't be flipped.")
-      // You can also use the boolean variable to conditionally do something
     })
     .catch(error => {
       console.log(error)
