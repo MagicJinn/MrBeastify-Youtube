@@ -140,8 +140,7 @@ function GetFlipBlocklist() {
 
       blacklistStatus = "Flip blacklist found. " + (useAlternativeImages ? "Images will be substituted." : "Images won't be flipped.")
     })
-    .catch(error => {
-      console.log(error)
+    .catch((error) => {
       blacklistStatus = "No flip blacklist found. Proceeding without it."
     });
 }
