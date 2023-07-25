@@ -90,7 +90,7 @@ async function checkImageExistence(index) {
   const testedURL = getImageURL(index)
 
   return fetch(testedURL)
-    .then(response => {
+    .then(() => {
       return true
     }).catch(error => {
       return false
