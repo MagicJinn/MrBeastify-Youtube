@@ -87,13 +87,12 @@ function getRandomImageFromDirectory() {
 async function checkImageExistence(index = 1) {
   const testedURL = getImageURL(index)
 
-  try {
-    // See if the image exists
-    await fetch(testedURL);
-    return true // Image exists
-  } catch {
-    return false // Image does not exist
-  }
+  return fetch(testedURL)
+    .then(response => {
+      return true
+    }).catch(error => {
+      return false
+    })
 }
 
 var highestImageIndex;
