@@ -4,31 +4,33 @@ var flipBlacklist
 
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
-  // Create a new img element for the overlay
-  const overlayImage = document.createElement("img");
-  overlayImage.src = overlayImageURL;
-  overlayImage.style.position = "absolute";
-  overlayImage.style.top = "0";
-  overlayImage.style.left = "0";
-  overlayImage.style.width = "100%";
-  overlayImage.style.height = "100%";
-  overlayImage.style.zIndex = "0"; // Ensure overlay is on top but below the time indicator
-  if (flip) {
-    overlayImage.style.transform = "scaleX(-1)"; // Flip the image horizontally
+  if (thumbnailElement.nodeName == "IMG") {
+    // Create a new img element for the overlay
+    const overlayImage = document.createElement("img");
+    overlayImage.src = overlayImageURL;
+    overlayImage.style.position = "absolute";
+    overlayImage.style.top = "0";
+    overlayImage.style.left = "0";
+    overlayImage.style.width = "100%";
+    overlayImage.style.height = "100%";
+    overlayImage.style.zIndex = "0"; // Ensure overlay is on top but below the time indicator
+    if (flip) {
+      overlayImage.style.transform = "scaleX(-1)"; // Flip the image horizontally
+    }
+    thumbnailElement.style.position = "relative"; // Style the thumbnailElement to handle absolute positioning
+    thumbnailElement.parentElement.appendChild(overlayImage);
+  } else if (thumbnailElement.nodeName == "DIV") {
+    thumbnailElement.style.backgroundImage = `url("${overlayImageURL}"), ` + thumbnailElement.style.backgroundImage;
   }
-  thumbnailElement.style.position = "relative"; // Style the thumbnailElement to handle absolute positioning
-
-  // Append the overlay to the parent of the thumbnail
-  thumbnailElement.parentElement.appendChild(overlayImage);
-}
+};
 
 // Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
   // Query all YouTube video thumbnails on the page that haven't been processed yet
   // (ignores shorts thumbnails)
-  const elementQuery =
-    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) a > yt-image > img.yt-core-image:only-child:not(.yt-core-attributed-string__image-element)";
-  const thumbnailElements = document.querySelectorAll(elementQuery);
+  const elementQueryThumbnail =
+    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) a > yt-image > img.yt-core-image:only-child:not(.yt-core-attributed-string__image-element),.ytp-videowall-still-image:not([style*='extension:'])";
+  const thumbnailElements = document.querySelectorAll(elementQueryThumbnail);
 
   // Apply overlay to each thumbnail
   thumbnailElements.forEach((thumbnailElement) => {
