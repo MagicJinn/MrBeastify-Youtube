@@ -86,7 +86,7 @@ function getRandomImageFromDirectory() {
 }
 
 // Checks if an image exists in the image folder
-async function checkImageExistence(index = 1) {
+async function checkImageExistence(index) {
   const testedURL = getImageURL(index)
 
   return fetch(testedURL)
