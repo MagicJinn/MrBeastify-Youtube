@@ -21,10 +21,8 @@ function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
     thumbnailElement.parentElement.appendChild(overlayImage);
   } else if (thumbnailElement.nodeName == "DIV") {
     thumbnailElement.style.backgroundImage = `url("${overlayImageURL}"), ` + thumbnailElement.style.backgroundImage;
-    thumbnailElement.style.cssText = thumbnailElement.style.cssText + "background-blend-mode: normal;";
-    thumbnailElement.parentElement.appendChild(overlayImage);
   }
-  };
+};
 
 // Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
