@@ -42,7 +42,7 @@ function applyOverlayToThumbnails() {
       const overlayImageIndex = getRandomImageFromDirectory();
       let flip = Math.random() < 0.25; // 25% chance to flip the image
       let overlayImageURL
-      if (flip && flipBlacklist.includes(overlayImageIndex)) {
+      if (typeof flipBlacklist !== 'undefined' && flip && flipBlacklist.includes(overlayImageIndex)) {
         if (useAlternativeImages) {
           overlayImageURL = getImageURL(`textFlipped/${overlayImageIndex}`);
           flip = false;
