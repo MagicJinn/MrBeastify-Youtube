@@ -22,16 +22,6 @@ youtuber **MrBeast** to every thumbnail.
 </div>
 
 <br>
-<br>
-
-## Development
-
-Check out **[This Issue][Development]** for instructions  
-on how to port / modify this extension.
-
-
-<br>
-<br>
 
 ## Notes
 
