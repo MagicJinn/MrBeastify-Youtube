@@ -17,20 +17,50 @@ function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
     if (flip) {
       overlayImage.style.transform = "scaleX(-1)"; // Flip the image horizontally
     }
+
+
     thumbnailElement.style.position = "relative"; // Style the thumbnailElement to handle absolute positioning
+
+    // Append the overlayImage to the parent of thumbnailElement
     thumbnailElement.parentElement.appendChild(overlayImage);
+
   } else if (thumbnailElement.nodeName == "DIV") {
     thumbnailElement.style.backgroundImage = `url("${overlayImageURL}"), ` + thumbnailElement.style.backgroundImage;
   }
 };
 
+function FindThumbnails() {
+  // Select every image on the page
+  var listAllImages = document.querySelectorAll("img");
+
+  // Check whether the aspect ratio matches that of a thumbnail
+  const targetAspectRatio = 16 / 9;
+  const errorMargin = 0.5;
+  var listAllThumbnails = Array.from(listAllImages).filter(image => {
+    const aspectRatio = image.width / image.height;
+    return Math.abs(aspectRatio - targetAspectRatio) < errorMargin;
+  });
+
+  // Select all images including from the recommended video screen
+  var videowallImages = document.querySelectorAll(".ytp-videowall-still-image:not([style*='extension:'])");
+
+  // Convert NodeList to an array and concatenate it with the filtered list
+  listAllThumbnails = listAllThumbnails.concat(Array.from(videowallImages));
+
+  return listAllThumbnails.filter(image => {
+    const parent = image.parentElement;
+    const processed = Array.from(parent.children).filter(child => {
+      return child.src && child.src.includes("extension")
+    })
+    return processed.length == 0;
+  });
+}
+
+
+
 // Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
-  // Query all YouTube video thumbnails on the page that haven't been processed yet
-  // (ignores shorts thumbnails)
-  const elementQueryThumbnail =
-    "ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) a > yt-image > img.yt-core-image:only-child:not(.yt-core-attributed-string__image-element),.ytp-videowall-still-image:not([style*='extension:'])";
-  const thumbnailElements = document.querySelectorAll(elementQueryThumbnail);
+  thumbnailElements = FindThumbnails()
 
   // Apply overlay to each thumbnail
   thumbnailElements.forEach((thumbnailElement) => {
