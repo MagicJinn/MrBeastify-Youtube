@@ -51,8 +51,6 @@ function FindThumbnails() {
 
     return processed.length == 0;
   });
-
-
 }
 
 // Looks for all thumbnails and applies overlay
