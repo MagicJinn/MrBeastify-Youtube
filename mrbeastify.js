@@ -21,12 +21,21 @@ function FindThumbnails() {
   var listAllImages = document.querySelectorAll("img")
 
   // Check whether the aspect ratio matches that of a thumbnail
-  const targetAspectRatio = 16 / 9;
-  const errorMargin = 0.5; // Allows for 4:3, since youtube is badly coded
+  const targetAspectRatio = [16 / 9, 4 / 3];
+  const errorMargin = 0.01; // Allows for 4:3, since youtube is badly coded
   var listAllThumbnails = Array.from(listAllImages).filter(image => {
+    // Check if the height is not 0 before calculating the aspect ratio
+    if (image.height === 0) {
+      return false;
+    }
+
     const aspectRatio = image.width / image.height;
-    return Math.abs(aspectRatio - targetAspectRatio) < errorMargin;
+    let isCorrectAspectRatio = (Math.abs(aspectRatio - targetAspectRatio[0]) < errorMargin) || (Math.abs(aspectRatio - targetAspectRatio[1]) < errorMargin);
+    console.log(isCorrectAspectRatio, aspectRatio)
+    return isCorrectAspectRatio;
   });
+
+
 
   // Select all images from the recommended video screen
   var videowallImages = document.querySelectorAll(".ytp-videowall-still-image:not([style*='extension:'])"); // Because youtube video wall images are not properly classified as images
