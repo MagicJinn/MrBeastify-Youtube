@@ -1,62 +1,59 @@
 const imagesPath = "images/";
 var useAlternativeImages
-var flipBlacklist
+var flipBlacklist // Stores flipBlackList.js
+var blacklistStatus
 
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
-  if (thumbnailElement.nodeName == "IMG") {
-    // Create a new img element for the overlay
-    const overlayImage = document.createElement("img");
-    overlayImage.src = overlayImageURL;
-    overlayImage.style.position = "absolute";
-    overlayImage.style.top = "0";
-    overlayImage.style.left = "0";
-    overlayImage.style.width = "100%";
-    overlayImage.style.height = "100%";
-    overlayImage.style.zIndex = "0"; // Ensure overlay is on top but below the time indicator
-    if (flip) {
-      overlayImage.style.transform = "scaleX(-1)"; // Flip the image horizontally
-    }
-
-
-    thumbnailElement.style.position = "relative"; // Style the thumbnailElement to handle absolute positioning
-
-    // Append the overlayImage to the parent of thumbnailElement
-    thumbnailElement.parentElement.appendChild(overlayImage);
-
-  } else if (thumbnailElement.nodeName == "DIV") {
-    thumbnailElement.style.backgroundImage = `url("${overlayImageURL}"), ` + thumbnailElement.style.backgroundImage;
-  }
+  // Create a new img element for the overlay
+  const overlayImage = document.createElement("img");
+  overlayImage.src = overlayImageURL;
+  overlayImage.style.position = "absolute";
+  overlayImage.style.top = overlayImage.style.left = "50%";
+  overlayImage.style.width = "100%";
+  overlayImage.style.transform = `translate(-50%, -50%) ${flip ? 'scaleX(-1)' : ''}`; // Center and flip the image
+  overlayImage.style.zIndex = "0"; // Ensure overlay is on top but below the time indicator
+  thumbnailElement.parentElement.insertBefore(overlayImage, thumbnailElement.nextSibling /*Makes sure the image doesn't cover any info, but still overlays the original thumbnail*/ );
 };
 
 function FindThumbnails() {
   // Select every image on the page
-  var listAllImages = document.querySelectorAll("img");
+  var listAllImages = document.querySelectorAll("img")
 
   // Check whether the aspect ratio matches that of a thumbnail
   const targetAspectRatio = 16 / 9;
-  const errorMargin = 0.5;
+  const errorMargin = 0.5; // Allows for 4:3, since youtube is badly coded
   var listAllThumbnails = Array.from(listAllImages).filter(image => {
     const aspectRatio = image.width / image.height;
     return Math.abs(aspectRatio - targetAspectRatio) < errorMargin;
   });
 
-  // Select all images including from the recommended video screen
-  var videowallImages = document.querySelectorAll(".ytp-videowall-still-image:not([style*='extension:'])");
+  // Select all images from the recommended video screen
+  var videowallImages = document.querySelectorAll(".ytp-videowall-still-image:not([style*='extension:'])"); // Because youtube video wall images are not properly classified as images
 
-  // Convert NodeList to an array and concatenate it with the filtered list
+  // Combine both lists of thumbnails
   listAllThumbnails = listAllThumbnails.concat(Array.from(videowallImages));
 
   return listAllThumbnails.filter(image => {
     const parent = image.parentElement;
+
+    // Check if any ancestor has the ID "video-preview"
+    const hasVideoPreviewAncestor = parent.closest("#video-preview") !== null;
+
+    // Check if thumbnails have already been processed
     const processed = Array.from(parent.children).filter(child => {
-      return child.src && child.src.includes("extension")
-    })
+      return (
+        child.src &&
+        child.src.includes("extension") ||
+        hasVideoPreviewAncestor
+      );
+    });
+
     return processed.length == 0;
   });
+
+
 }
-
-
 
 // Looks for all thumbnails and applies overlay
 function applyOverlayToThumbnails() {
@@ -72,15 +69,14 @@ function applyOverlayToThumbnails() {
       const overlayImageIndex = getRandomImageFromDirectory();
       let flip = Math.random() < 0.25; // 25% chance to flip the image
       let overlayImageURL
-      if (flipBlacklist && flip && flipBlacklist.includes(overlayImageIndex)) {
-        if (useAlternativeImages) {
+      if (flip && flipBlacklist && flipBlacklist.includes(overlayImageIndex)) { // Check if the image is on the blacklist
+        if (useAlternativeImages) { // Check if useAlternativeImages is true
           overlayImageURL = getImageURL(`textFlipped/${overlayImageIndex}`);
-          flip = false;
         } else {
           overlayImageURL = getImageURL(overlayImageIndex);
-          flip = false;
         }
-      } else {
+        flip = false;
+      } else { // Don't flip the image
         overlayImageURL = getImageURL(overlayImageIndex);
       }
       applyOverlay(thumbnailElement, overlayImageURL, flip);
@@ -92,6 +88,22 @@ function applyOverlayToThumbnails() {
 function getImageURL(index) {
   return chrome.runtime.getURL(`${imagesPath}${index}.png`);
 }
+
+// Checks if an image exists in the image folder
+async function checkImageExistence(index) {
+  const testedURL = getImageURL(index)
+
+  return fetch(testedURL)
+    .then(() => {
+      return true
+    }).catch(error => {
+      return false
+    })
+}
+
+////////////////////////
+//  BrandonXLF Magic  //
+////////////////////////
 
 // Defines the N size of last images that will not be repeated.
 const size_of_non_repeat = 8
@@ -107,24 +119,11 @@ function getRandomImageFromDirectory() {
     randomIndex = Math.floor(Math.random() * highestImageIndex) + 1;
   }
 
-  // When it finds the non repeating index, it eliminates the oldest value,
-  // and pushes the current index.  
+  // When it finds the non repeating index, it eliminates the oldest value, and pushes the current index
   last_indexes.shift()
   last_indexes.push(randomIndex)
 
   return randomIndex
-}
-
-// Checks if an image exists in the image folder
-async function checkImageExistence(index) {
-  const testedURL = getImageURL(index)
-
-  return fetch(testedURL)
-    .then(() => {
-      return true
-    }).catch(error => {
-      return false
-    })
 }
 
 var highestImageIndex;
@@ -160,7 +159,9 @@ async function getHighestImageIndex() {
   // Max is the size of the image array
   highestImageIndex = max;
 }
-var blacklistStatus
+////////////////////////
+//  BrandonXLF Magic  //
+////////////////////////
 
 function GetFlipBlocklist() {
   fetch(chrome.runtime.getURL(`${imagesPath}flip_blacklist.json`))
