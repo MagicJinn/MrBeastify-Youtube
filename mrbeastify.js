@@ -22,7 +22,7 @@ function FindThumbnails() {
 
   // Check whether the aspect ratio matches that of a thumbnail
   const targetAspectRatio = [16 / 9, 4 / 3];
-  const errorMargin = 0.01; // Allows for 4:3, since youtube is badly coded
+  const errorMargin = 0.02; // Allows for 4:3, since youtube is badly coded
   var listAllThumbnails = Array.from(listAllImages).filter(image => {
     // Check if the height is not 0 before calculating the aspect ratio
     if (image.height === 0) {
@@ -31,7 +31,6 @@ function FindThumbnails() {
 
     const aspectRatio = image.width / image.height;
     let isCorrectAspectRatio = (Math.abs(aspectRatio - targetAspectRatio[0]) < errorMargin) || (Math.abs(aspectRatio - targetAspectRatio[1]) < errorMargin);
-    console.log(isCorrectAspectRatio, aspectRatio)
     return isCorrectAspectRatio;
   });
 
