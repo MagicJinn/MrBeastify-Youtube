@@ -48,13 +48,16 @@ function FindThumbnails() {
     // Checks whether it's a video preview
     const isVideoPreview = parent.closest("#video-preview") !== null || parent.tagName == "YTD-MOVING-THUMBNAIL-RENDERER"
 
+    // Checks whether it's a chapter thumbnail
+    const isChapter = parent.closest("#endpoint") !== null
+
 
     // Check if thumbnails have already been processed
     const processed = Array.from(parent.children).filter(child => {
       return (
         child.src &&
         child.src.includes("extension") ||
-        isVideoPreview)
+        isVideoPreview || isChapter)
     });
 
     return processed.length == 0;
