@@ -45,16 +45,16 @@ function FindThumbnails() {
   return listAllThumbnails.filter(image => {
     const parent = image.parentElement;
 
-    // Check if any ancestor has the ID "video-preview"
-    const hasVideoPreviewAncestor = parent.closest("#video-preview") !== null;
+    // Checks whether it's a video preview
+    const isVideoPreview = parent.closest("#video-preview") !== null || parent.tagName == "YTD-MOVING-THUMBNAIL-RENDERER"
+
 
     // Check if thumbnails have already been processed
     const processed = Array.from(parent.children).filter(child => {
       return (
         child.src &&
         child.src.includes("extension") ||
-        hasVideoPreviewAncestor
-      );
+        isVideoPreview)
     });
 
     return processed.length == 0;
