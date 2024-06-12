@@ -219,7 +219,7 @@ async function LoadConfig() {
         extensionIsDisabled = config.extensionIsDisabled || df.extensionIsDisabled;
         appearChance = config.appearChance || df.appearChance;
         flipChance = config.flipChance || df.flipChance;
-        console.log(config)
+
         if (Object.keys(config).length === 0 && config.constructor === Object /* config doesn't exist */) {
             await new Promise((resolve, reject) => {
                 chrome.storage.local.set(df, () => {
