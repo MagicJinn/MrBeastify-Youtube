@@ -3,16 +3,16 @@
     "name": "YouTube MrBeastify",
     "version": "1.6.0",
     "icons": {
-        "96": "icons/icon-96.png"
+        "96": "icon.png"
     },
     "description": "Modify YouTube thumbnails to include MrBeast",
-    "browser_action": {
+    "action": {
         "default_popup": "settings.html"
     },
-    "host_permissions": [
-        "storage",
-        "*://*.youtube.com/*"
+    "permissions": [
+        "storage"
     ],
+    "host_permissions": ["*://*.youtube.com/*"],
     "content_scripts": [{
         "matches": ["*://*.youtube.com/*"],
         "js": ["mrbeastify.js"],
