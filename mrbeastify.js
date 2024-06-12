@@ -3,6 +3,11 @@ var useAlternativeImages
 var flipBlacklist // Stores flipBlackList.js
 var blacklistStatus
 
+// Config
+var extensionIsDisabled = false
+var appearChance = 1.00//%
+var flipChance = 0.25//%
+
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
     // Create a new img element for the overlay
@@ -74,26 +79,27 @@ function applyOverlayToThumbnails() {
     // Apply overlay to each thumbnail
     thumbnailElements.forEach((thumbnailElement) => {
         // Apply overlay and add to processed thumbnails
-        let loops = Math.random() > 0.001 ? 1 : 20; // Easter egg
+        const loops = Math.random() > 0.001 ? 1 : 20; // Easter egg
 
         for (let i = 0; i < loops; i++) {
-            // Get overlay image URL from your directory
-            const overlayImageIndex = getRandomImageFromDirectory();
-            let flip = Math.random() < 0.25; // 25% chance to flip the image
-            let overlayImageURL
-            if (flip && flipBlacklist && flipBlacklist.includes(overlayImageIndex)) { // Check if the image is on the blacklist
-                if (useAlternativeImages) { // Check if useAlternativeImages is true
-                    overlayImageURL = getImageURL(`textFlipped/${overlayImageIndex}`);
-                } else {
-                    overlayImageURL = getImageURL(overlayImageIndex);
+            // Determine the image URL and whether it should be flipped
+            let flip = Math.random() < flipChance;
+            let baseImagePath = getRandomImageFromDirectory();
+            if (flip && flipBlacklist && flipBlacklist.includes(baseImagePath)) {
+                if (useAlternativeImages) {
+                    baseImagePath = `textFlipped/${baseImagePath}`;
                 }
                 flip = false;
-            } else { // Don't flip the image
-                overlayImageURL = getImageURL(overlayImageIndex);
             }
+
+            const overlayImageURL = Math.random() < appearChance ?
+                getImageURL(baseImagePath) :
+                ""; // Just set the url to "" if we don't want MrBeast to appear lol
+
             applyOverlay(thumbnailElement, overlayImageURL, flip);
         }
     });
+
 }
 
 // Get the URL of an image
@@ -189,12 +195,57 @@ function GetFlipBlocklist() {
         });
 }
 
-GetFlipBlocklist()
+async function LoadConfig() {
+    const df /* default */ = {
+        extensionIsDisabled: extensionIsDisabled,
+        appearChance: appearChance,
+        flipChance: flipChance
+    }
 
-getHighestImageIndex()
-    .then(() => {
-        setInterval(applyOverlayToThumbnails, 100);
-        console.log(
-            "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected. " + blacklistStatus
-        );
-    })
+    try {
+        const config = await new Promise((resolve, reject) => {
+            chrome.storage.local.get({
+                extensionIsDisabled,
+                appearChance,
+                flipChance
+            }, (result) => {
+                chrome.runtime.lastError ? // Check for errors
+                    reject(chrome.runtime.lastError) : // Reject if errors
+                    resolve(result) // Resolve if no errors
+            });
+        });
+
+        // Initialize variables based on loaded configuration
+        extensionIsDisabled = config.extensionIsDisabled || df.extensionIsDisabled;
+        appearChance = config.appearChance || df.appearChance;
+        flipChance = config.flipChance || df.flipChance;
+        console.log(config)
+        if (Object.keys(config).length === 0 && config.constructor === Object /* config doesn't exist */) {
+            await new Promise((resolve, reject) => {
+                chrome.storage.local.set(df, () => {
+                    chrome.runtime.lastError ? // Check for errors
+                        reject(chrome.runtime.lastError) : // Reject if errors
+                        resolve() // Resolve if no errors
+                })
+            }
+            )
+        }
+    } catch (error) { console.error("Error loading configuration:", error); }
+
+}
+
+async function Main() {
+    await LoadConfig()
+    if (!extensionIsDisabled) {
+        GetFlipBlocklist()
+        getHighestImageIndex()
+            .then(() => {
+                setInterval(applyOverlayToThumbnails, 100);
+                console.log(
+                    "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected. " + blacklistStatus
+                );
+            })
+    } else console.log("MrBeastify is disabled.")
+}
+
+Main()
