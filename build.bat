@@ -31,7 +31,10 @@ echo Copying files to the temp directory...
 xcopy "%SOURCE_FOLDER%\manifest.json" "%TEMP_FOLDER%" /Q
 xcopy "%SOURCE_FOLDER%\mrbeastify.js" "%TEMP_FOLDER%" /Q
 xcopy "%SOURCE_FOLDER%\images" "%TEMP_FOLDER%\images\" /E /Q
-xcopy "%SOURCE_FOLDER%\icons" "%TEMP_FOLDER%\icons\" /E /Q
+xcopy "%SOURCE_FOLDER%\icon.png" "%TEMP_FOLDER%"/Q
+xcopy "%SOURCE_FOLDER%\settings.html" "%TEMP_FOLDER%"/Q
+xcopy "%SOURCE_FOLDER%\settings.js" "%TEMP_FOLDER%"/Q
+
 
 :: Create Firefox zip folder using 7-Zip
 echo Creating Firefox zip folder...
@@ -46,7 +49,9 @@ mkdir "%TEMP_FOLDER%"
 xcopy "%SOURCE_FOLDER%\mrbeastify.js" "%TEMP_FOLDER%" /Q
 xcopy "%SOURCE_FOLDER%\manifest v3.json" "%TEMP_FOLDER%" /Q
 xcopy "%SOURCE_FOLDER%\images" "%TEMP_FOLDER%\images\" /E /Q
-xcopy "%SOURCE_FOLDER%\icons" "%TEMP_FOLDER%\icons\" /E /Q
+xcopy "%SOURCE_FOLDER%\icon.png" "%TEMP_FOLDER%"/Q
+xcopy "%SOURCE_FOLDER%\settings.html" "%TEMP_FOLDER%"/Q
+xcopy "%SOURCE_FOLDER%\settings.js" "%TEMP_FOLDER%"/Q
 
 :: Rename manifest for Chromium
 echo Preparing files for Chromium zip...

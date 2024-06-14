@@ -1,2 +1,4 @@
 
 *.zip
+/allcolibri
+buildcolibri.bat

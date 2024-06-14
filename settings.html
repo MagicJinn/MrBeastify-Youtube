@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-size: 16px;
+            width: 300px;
+            background-color: #08B0D5;
+        }
+
+        .kofi-icon {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        .fancy-checkbox {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+        }
+
+        .hidden-checkbox {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .checkbox-text {
+            vertical-align: bottom;
+        }
+
+        /* Checked state */
+        .hidden-checkbox:checked+.checkmark:after {
+            content: "";
+            position: absolute;
+            display: block;
+            left: 6px;
+            top: 2px;
+            width: 6px;
+            height: 12px;
+            border: solid #333;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="popup-container">
+        <h1 id="extension-title">MrBeastify Options</h1>
+        
+        <!-- Fancy Checkbox with Custom Styles -->
+        <label class="fancy-checkbox">
+            <input type="checkbox" id="disableExtension" class="hidden-checkbox">
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Extension Enabled</span>
+        </label>
+
+        <br><br>
+
+        <!-- Appear Chance Input -->
+        <label>
+            Appear Chance (%):
+            <input type="number" id="appearChance" min="0" max="100" step="5" />
+        </label>
+
+        <br><br>
+
+        <!-- Flip Chance Input -->
+        <label>
+            Flip Chance (%):
+            <input type="number" id="flipChance" min="0" max="100" step="5" />
+        </label>
+
+        <a href="https://ko-fi.com/magicjinn" target="_blank" class="kofi-icon">
+                        <img src="https://ko-fi.com/favicon.ico" width="24" height="24">
+        </a>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+
+</html>
