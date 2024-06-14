@@ -32,6 +32,18 @@ function saveSettings() {
     });
 }
 
+function ChangeNameInHeading() {
+    // Get the extension name
+    let extensionName = chrome.runtime.getManifest().name;
+
+    // Remove "youtube" (case-insensitive) from the extension name and trim
+    extensionName = extensionName.replace(/youtube/i, '').trim();
+
+    // Replace "MrBeastify" in the title with the cleaned extension name
+    const titleElement = document.getElementById('extension-title');
+    titleElement.textContent = titleElement.textContent.replace('MrBeastify', extensionName);
+}
+
 // Call loadSettings() when the page loads
 document.addEventListener('DOMContentLoaded', loadSettings);
 
@@ -39,3 +51,5 @@ document.addEventListener('DOMContentLoaded', loadSettings);
 document.getElementById('disableExtension').addEventListener('input', saveSettings);
 document.getElementById('appearChance').addEventListener('input', saveSettings);
 document.getElementById('flipChance').addEventListener('input', saveSettings);
+
+document.addEventListener('DOMContentLoaded', ChangeNameInHeading);
