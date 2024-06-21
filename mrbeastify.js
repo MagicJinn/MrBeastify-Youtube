@@ -236,16 +236,24 @@ async function LoadConfig() {
 
 async function Main() {
     await LoadConfig()
-    if (!extensionIsDisabled) {
-        GetFlipBlocklist()
-        getHighestImageIndex()
-            .then(() => {
-                setInterval(applyOverlayToThumbnails, 100);
-                console.log(
-                    "MrBeastify Loaded Successfully, " + highestImageIndex + " images detected. " + blacklistStatus
-                );
-            })
-    } else console.log("MrBeastify is disabled.")
+    let extensionName = chrome.runtime.getManifest().name;
+
+    if (extensionIsDisabled) {
+        console.log(`${extensionName} is disabled.`)
+        return // Exit the function if MrBeastify is disabled
+    }
+
+
+    GetFlipBlocklist()
+    getHighestImageIndex()
+        .then(() => {
+            setInterval(applyOverlayToThumbnails, 100);
+            console.log(
+                `${extensionName} Loaded Successfully. ${highestImageIndex} images detected. Blacklist status: ${blacklistStatus}.`
+            );
+
+        })
+
 }
 
 Main()

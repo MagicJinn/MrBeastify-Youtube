@@ -41,7 +41,7 @@ function ChangeNameInHeading() {
 
     // Replace "MrBeastify" in the title with the cleaned extension name
     const titleElement = document.getElementById('extension-title');
-    titleElement.textContent = titleElement.textContent.replace('MrBeastify', extensionName);
+    titleElement.textContent = titleElement.textContent.replace('TITLE', extensionName);
 }
 
 // Call loadSettings() when the page loads
