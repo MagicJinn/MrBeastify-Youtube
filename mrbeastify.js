@@ -236,7 +236,7 @@ async function LoadConfig() {
 
 async function Main() {
     await LoadConfig()
-    let extensionName = chrome.runtime.getManifest().name;
+    const extensionName = chrome.runtime.getManifest().name;
 
     if (extensionIsDisabled) {
         console.log(`${extensionName} is disabled.`)
