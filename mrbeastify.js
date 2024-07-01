@@ -2,6 +2,7 @@ const imagesPath = "images/";
 var useAlternativeImages
 var flipBlacklist // Stores flipBlackList.js
 var blacklistStatus
+var extensionName = chrome.runtime.getManifest().name;
 
 // Config
 var extensionIsDisabled = false
@@ -12,6 +13,7 @@ var flipChance = 0.25//%
 function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
     // Create a new img element for the overlay
     const overlayImage = document.createElement("img");
+    overlayImage.id = extensionName;
     overlayImage.src = overlayImageURL;
     overlayImage.style.position = "absolute";
     overlayImage.style.top = overlayImage.style.left = "50%";
@@ -22,7 +24,7 @@ function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
 };
 
 function FindThumbnails() {
-    var thumbnailImages = document.querySelectorAll("ytd-thumbnail:not(.ytd-video-preview, .ytd-rich-grid-slim-media) a > yt-image > img.yt-core-image:only-child:not(.yt-core-attributed-string__image-element)");
+    var thumbnailImages = document.querySelectorAll("ytd-thumbnail a > yt-image > img.yt-core-image");
     var notificationImages = document.querySelectorAll('img.style-scope.yt-img-shadow[width="86"]');
 
     const allImages = [ // Put all the selected images into an array
@@ -46,7 +48,7 @@ function FindThumbnails() {
     });
 
     // Select all images from the recommended video screen
-    var videowallImages = document.querySelectorAll(".ytp-videowall-still-image:not([style*='extension:'])"); // Because youtube video wall images are not properly classified as images
+    var videowallImages = document.querySelectorAll(".ytp-videowall-still-image"); // Because youtube video wall images are not properly classified as images
 
     listAllThumbnails = listAllThumbnails.concat(Array.from(videowallImages));
 
@@ -59,13 +61,17 @@ function FindThumbnails() {
         // Checks whether it's a chapter thumbnail
         const isChapter = parent.closest("#endpoint") !== null
 
-
         // Check if thumbnails have already been processed
         const processed = Array.from(parent.children).filter(child => {
+            const alreadyHasAThumbnail =
+                child.id && // Child has ID
+                child.id.includes(extensionName);
+
             return (
-                child.src &&
-                child.src.includes("extension") ||
-                isVideoPreview || isChapter)
+                alreadyHasAThumbnail
+                || isVideoPreview
+                || isChapter
+            )
         });
 
         return processed.length == 0;
@@ -230,30 +236,27 @@ async function LoadConfig() {
             }
             )
         }
-    } catch (error) { console.error("Error loading configuration:", error); }
-
+    } catch (error) { console.error("Guhh?? Error loading configuration:", error); }
 }
 
 async function Main() {
     await LoadConfig()
-    const extensionName = chrome.runtime.getManifest().name;
 
     if (extensionIsDisabled) {
         console.log(`${extensionName} is disabled.`)
         return // Exit the function if MrBeastify is disabled
     }
 
-
     GetFlipBlocklist()
+    console.log(`${extensionName} will now detect the amount of images. Ignore all the following errors.`)
     getHighestImageIndex()
         .then(() => {
             setInterval(applyOverlayToThumbnails, 100);
             console.log(
-                `${extensionName} Loaded Successfully. ${highestImageIndex} images detected. Blacklist status: ${blacklistStatus}.`
+                `${extensionName} Loaded Successfully. ${highestImageIndex} images detected. ${blacklistStatus}.`
             );
 
         })
-
 }
 
 Main()
