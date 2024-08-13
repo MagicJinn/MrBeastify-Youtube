@@ -28,14 +28,6 @@ Microsoft Edge support has been ended, and the extension has been delisted. This
 
 [![Button Download Chrome]][Download Chrome]  
 
-## 🌱 Eco-friendly mode, and Impact Hero
-
-With our partnership with Impact Hero, you can now offset carbon and help the environment at no cost while using the extension and browsing the web. This feature is entirely optional (opt-in) and the extension will function without it. The code that enables this is not in this repository, as by contract, I am not allowed to redistribute their SDK, and adding it to the repo would make it so every fork would also include the SDK. **However**, the SDK can still be inspected through downloading the extension and manually inspecting it. Nothing is obfuscated, the code should be plain readable.
-
-Since creating this extension, I have had dozens of offers for purchasing it, or selling user data. I have declined every single one. I would not have partnered with Impact Hero if I did not trust them.
-
-Learn more about Eco-friendly mode [**here**](https://impacthero.co/ecomode/?extension_name=Youtube%20MrBeastify).
-
 <!----------------------------------------------------------------------------->
 
 [Button Download Firefox]: https://img.shields.io/badge/Firefox-FF7139?style=for-the-badge&logoColor=white&logo=Firefox
