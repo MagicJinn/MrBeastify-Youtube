@@ -1,19 +1,19 @@
-const imagesPath = "images/";
-var useAlternativeImages
-var flipBlacklist // Stores flipBlackList.js
-var blacklistStatus
-var extensionName = chrome.runtime.getManifest().name;
+const IMAGES_PATH = "images/";
+let useAlternativeImages;
+let flipBlacklist;
+let blacklistStatus;
+const EXTENSION_NAME = chrome.runtime.getManifest().name;
 
 // Config
-var extensionIsDisabled = false
-var appearChance = 1.00//%
-var flipChance = 0.25//%
+let extensionIsDisabled = false;
+let appearChance = 1.00; //%
+let flipChance = 0.25; //%
 
 // Apply the overlay
 function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
     // Create a new img element for the overlay
     const overlayImage = document.createElement("img");
-    overlayImage.id = extensionName;
+    overlayImage.id = EXTENSION_NAME;
     overlayImage.src = overlayImageURL;
     overlayImage.style.position = "absolute";
     overlayImage.style.top = overlayImage.style.left = "50%";
@@ -65,12 +65,12 @@ function FindThumbnails() {
         const processed = Array.from(parent.children).filter(child => {
             const alreadyHasAThumbnail =
                 child.id && // Child has ID
-                child.id.includes(extensionName);
+                child.id.includes(EXTENSION_NAME);
 
             return (
-                alreadyHasAThumbnail
-                || isVideoPreview
-                || isChapter
+                alreadyHasAThumbnail ||
+                isVideoPreview ||
+                isChapter
             )
         });
 
@@ -110,7 +110,7 @@ function applyOverlayToThumbnails() {
 
 // Get the URL of an image
 function getImageURL(index) {
-    return chrome.runtime.getURL(`${imagesPath}${index}.png`);
+    return chrome.runtime.getURL(`${IMAGES_PATH}${index}.png`);
 }
 
 // Checks if an image exists in the image folder
@@ -153,8 +153,8 @@ function getRandomImageFromDirectory() {
 var highestImageIndex;
 // Gets the highest index of an image in the image folder starting from 1
 async function getHighestImageIndex() {
-    // Avoid exponential search for smaller values
-    let i = 4;
+    const INITIAL_INDEX = 4;
+    let i = INITIAL_INDEX;
 
     // Increase i until i is greater than the number of images
     while (await checkImageExistence(i)) {
@@ -162,7 +162,7 @@ async function getHighestImageIndex() {
     }
 
     // Possible min and max values
-    let min = i <= 4 ? 1 : i / 2;
+    let min = i <= INITIAL_INDEX ? 1 : i / 2;
     let max = i;
 
     // Binary search
@@ -187,18 +187,17 @@ async function getHighestImageIndex() {
 //  BrandonXLF Magic  //
 ////////////////////////
 
-function GetFlipBlocklist() {
-    fetch(chrome.runtime.getURL(`${imagesPath}flip_blacklist.json`))
-        .then(response => response.json())
-        .then(data => {
-            useAlternativeImages = data.useAlternativeImages;
-            flipBlacklist = data.blacklistedImages;
-
-            blacklistStatus = "Flip blacklist found. " + (useAlternativeImages ? "Images will be substituted." : "Images won't be flipped.")
-        })
-        .catch((error) => {
-            blacklistStatus = "No flip blacklist found. Proceeding without it."
-        });
+async function GetFlipBlocklist() {
+    try {
+        const response = await fetch(chrome.runtime.getURL(`${IMAGES_PATH}flip_blacklist.json`));
+        const data = await response.json();
+        useAlternativeImages = data.useAlternativeImages;
+        flipBlacklist = data.blacklistedImages;
+        blacklistStatus = `Flip blacklist found. ${useAlternativeImages ? "Images will be substituted." : "Images won't be flipped."}`;
+    } catch (error) {
+        console.error("Error fetching flip blacklist:", error);
+        blacklistStatus = "No flip blacklist found. Proceeding without it.";
+    }
 }
 
 async function LoadConfig() {
@@ -226,36 +225,36 @@ async function LoadConfig() {
         appearChance = config.appearChance || df.appearChance;
         flipChance = config.flipChance || df.flipChance;
 
-        if (Object.keys(config).length === 0 && config.constructor === Object /* config doesn't exist */) {
+        if (Object.keys(config).length === 0 && config.constructor === Object /* config doesn't exist */ ) {
             await new Promise((resolve, reject) => {
                 chrome.storage.local.set(df, () => {
                     chrome.runtime.lastError ? // Check for errors
                         reject(chrome.runtime.lastError) : // Reject if errors
                         resolve() // Resolve if no errors
                 })
-            }
-            )
+            })
         }
-    } catch (error) { console.error("Guhh?? Error loading configuration:", error); }
+    } catch (error) {
+        console.error("Guhh?? Error loading configuration:", error);
+    }
 }
 
 async function Main() {
     await LoadConfig()
 
     if (extensionIsDisabled) {
-        console.log(`${extensionName} is disabled.`)
+        console.info(`${EXTENSION_NAME} is disabled.`)
         return // Exit the function if MrBeastify is disabled
     }
 
-    GetFlipBlocklist()
-    console.log(`${extensionName} will now detect the amount of images. Ignore all the following errors.`)
-    getHighestImageIndex()
+    await GetFlipBlocklist()
+    console.info(`${EXTENSION_NAME} will now detect the amount of images. Ignore all the following errors.`)
+    await getHighestImageIndex()
         .then(() => {
             setInterval(applyOverlayToThumbnails, 100);
-            console.log(
-                `${extensionName} Loaded Successfully. ${highestImageIndex} images detected. ${blacklistStatus}.`
+            console.info(
+                `${EXTENSION_NAME} Loaded Successfully. ${highestImageIndex} images detected. ${blacklistStatus}.`
             );
-
         })
 }
 

@@ -1,6 +1,6 @@
-var extensionIsDisabled
-var appearChance
-var flipChance
+let extensionIsDisabled
+let appearChance
+let flipChance
 
 // Function to load settings from Chrome storage
 function loadSettings() {
