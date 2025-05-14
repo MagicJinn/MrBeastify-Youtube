@@ -138,6 +138,11 @@ const last_indexes = Array(size_of_non_repeat)
 function getRandomImageFromDirectory() {
     let randomIndex = -1
 
+    // If the number of images is less than the size of the non-repeat array, reset the array
+    if (highestImageIndex <= size_of_non_repeat) {
+        last_indexes.fill(-1); // Reset the array
+    }
+
     // It selects a random index until it finds one that is not repeated
     while (last_indexes.includes(randomIndex) || randomIndex < 0) {
         randomIndex = Math.floor(Math.random() * highestImageIndex) + 1;
@@ -195,8 +200,7 @@ async function GetFlipBlocklist() {
         flipBlacklist = data.blacklistedImages;
         blacklistStatus = `Flip blacklist found. ${useAlternativeImages ? "Images will be substituted." : "Images won't be flipped."}`;
     } catch (error) {
-        console.error("Error fetching flip blacklist:", error);
-        blacklistStatus = "No flip blacklist found. Proceeding without it.";
+        blacklistStatus = "No flip blacklist found. Proceeding without it";
     }
 }
 
