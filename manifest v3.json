@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "YouTube MrBeastify",
-    "version": "1.7.8",
+    "version": "1.7.9",
     "icons": {
         "96": "icon.png"
     },
