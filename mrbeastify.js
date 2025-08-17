@@ -24,12 +24,14 @@ function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
 };
 
 function FindThumbnails() {
-    var thumbnailImages = document.querySelectorAll("ytd-thumbnail a > yt-image > img.yt-core-image");
+    var oldThumbnailImages = document.querySelectorAll("ytd-thumbnail a > yt-image > img.yt-core-image");
     var notificationImages = document.querySelectorAll('img.style-scope.yt-img-shadow[width="86"]');
+    var newMainThumbnailImages = document.querySelectorAll('.yt-thumbnail-view-model__image img');
 
     const allImages = [ // Put all the selected images into an array
-        ...Array.from(thumbnailImages),
+        ...Array.from(oldThumbnailImages),
         ...Array.from(notificationImages),
+        ...Array.from(newMainThumbnailImages), // Add the new selector to the array
     ];
 
     // Check whether the aspect ratio matches that of a thumbnail
