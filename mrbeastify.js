@@ -24,15 +24,17 @@ function applyOverlay(thumbnailElement, overlayImageURL, flip = false) {
 };
 
 function FindThumbnails() {
-    var oldThumbnailImages = document.querySelectorAll("ytd-thumbnail a > yt-image > img.yt-core-image");
-    var notificationImages = document.querySelectorAll('img.style-scope.yt-img-shadow[width="86"]');
-    var newMainThumbnailImages = document.querySelectorAll('.yt-thumbnail-view-model__image img');
-
-    const allImages = [ // Put all the selected images into an array
-        ...Array.from(oldThumbnailImages),
-        ...Array.from(notificationImages),
-        ...Array.from(newMainThumbnailImages), // Add the new selector to the array
+    const imageSelectors = [
+        "ytd-thumbnail a > yt-image > img.yt-core-image", // old thumbnail images
+        'img.style-scope.yt-img-shadow[width="86"]', // notification images
+        '.yt-thumbnail-view-model__image img', // new main thumbnail images
+        'img.ytCoreImageHost' // another day, another queryselector
     ];
+
+    const allImages = [];
+    for (const selector of imageSelectors) {
+        allImages.push(...Array.from(document.querySelectorAll(selector)));
+    }
 
     // Check whether the aspect ratio matches that of a thumbnail
     const targetAspectRatio = [16 / 9, 4 / 3];
@@ -50,15 +52,15 @@ function FindThumbnails() {
     });
 
     // Select all images from the recommended video screen
-    var videowallImages = document.querySelectorAll(".ytp-videowall-still-image"); // Because youtube video wall images are not properly classified as images
-
-    listAllThumbnails = listAllThumbnails.concat(Array.from(videowallImages));
-
+    const videoWallImages = document.querySelectorAll(".ytp-videowall-still-image"); // Because youtube video wall images are not properly classified as images
+    const cuedThumbnailOverlays = document.querySelectorAll('div.ytp-cued-thumbnail-overlay-image');
+    listAllThumbnails.push(...videoWallImages, ...cuedThumbnailOverlays);
+        
     return listAllThumbnails.filter(image => {
         const parent = image.parentElement;
 
         // Checks whether it's a video preview
-        const isVideoPreview = parent.closest("#video-preview") !== null || parent.tagName == "YTD-MOVING-THUMBNAIL-RENDERER"
+        const isVideoPreview = parent.closest("#video-preview") !== null || Array.from(parent.classList).some(cls => cls.includes("ytAnimated"))
 
         // Checks whether it's a chapter thumbnail
         const isChapter = parent.closest("#endpoint") !== null
@@ -95,9 +97,14 @@ function applyOverlayToThumbnails() {
             let baseImagePath = getRandomImageFromDirectory();
             if (flip && flipBlacklist && flipBlacklist.includes(baseImagePath)) {
                 if (useAlternativeImages) {
-                    baseImagePath = `textFlipped/${baseImagePath}`;
+                    let newImagePath = `textFlipped/${baseImagePath}`;
+                    if (checkImageExistence(newImagePath)) {
+                        baseImagePath = newImagePath;
+                        flip = false
+                    }
+                } else {
+                    flip = false;
                 }
-                flip = false;
             }
 
             const overlayImageURL = Math.random() < appearChance ?
